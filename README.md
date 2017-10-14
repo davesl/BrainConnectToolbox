@@ -5,3 +5,4 @@ This toolbox applies advanced diffusion tractography proceedures in order to def
 To get started see RunParcellation.m
 
 Note: The toolbox should be run from a Unix/Linux based machine with MRTrix3 installed in the enironment variable path. A standalone version has been included, just add the /bin and /scripts directories to your ./bashrc path setups.
+# CrossValidationAndCurveFitting
