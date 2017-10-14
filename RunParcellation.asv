@@ -1,0 +1,41 @@
+function [Mcropped, TrackPaths, ConnectomeConfig] = RunParcellation(ParcImage,ParcConfigFile,SeedInds,TargInds,FODpath,MaskPath,TractDir,TrackOptions)
+% Run tractography based on seed and target indices defined in a
+% parcellation image. A new parcellation image will then be generated and
+% used to built a connectivity matrix of the tractogram.
+% 
+% INPUTS
+% 
+% ParcImage = full path to parcellated image file
+% ParcConfigFile = path for parcellation config file e.g. fs_default.txt
+% SeedInds = vector of indices to be used as seed regions as defined by 
+%            ParcImage
+% TargInds = vector of indices to be used as target regions as defined by
+%            ParcImage
+% FODpath = full path to preprocessed FOD data
+% MaskPath = full path to analigned brain mask
+% TractDir = full path to directory for tractograpy data to be saved
+% TrackOptions = structure containing processing options. Default options can be
+%       obtained by calling defaultTractOptions.m
+% 
+% OUTPUT
+% Mcropped = connectivity matrix of
+
+%% Load data and setup dirctories and variable for processing
+
+if isempty(TrackOptions)
+    TrackOptions = defaultTractOptions_custom();
+end
+
+%% Run seed to target tracking
+
+TrackPaths = TrackFromParc(ParcImage,SeedInds,TargInds,FODpath,MaskPath,TractDir,TrackOptions);
+
+%% Prepare parcellation image for connectome construction
+NewParcPath = fullfile(TrackPaths.TractDir,'NewParcImage.nii.gz');
+[NewParcPath, ConnectomeConfig] = PrepareParc(ParcImage,TrackPaths.Seed,TargInds,ParcConfigFile,NewParcPath);
+
+%% Generate cropped connectome matrix
+
+Mcropped = tracts2connectome(NewParcPath,TrackPath,ConnectomeOut,TargInds,TrackOptions);
+
+
